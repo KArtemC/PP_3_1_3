@@ -4,11 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
@@ -16,7 +12,7 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("/admin")
+@RequestMapping("/admins")
 public class AdminController {
 
     private final UserService userService;
@@ -31,18 +27,18 @@ public class AdminController {
     @GetMapping()
     public String readAllUsers(Model model) {
         model.addAttribute("users", userService.readAllUsers());
-        return "admin_page";
+        return "admins_page";
     }
 
-    @GetMapping("/create")
+    @GetMapping("/create/{id}")
     public String createForm(Model model) {
-        model.addAttribute("user", new User());
+        model.addAttribute("users", new User());
         model.addAttribute("roles", roleService.findAll());
         return "create";
     }
 
-    @PostMapping("/createauser")
-    public String create(@ModelAttribute("user") @Valid User user,
+    @PostMapping("/create/{id}")
+    public String create(@ModelAttribute("users") @Valid User user,
                          BindingResult bindingResult,
                          @RequestParam("role") String selectedRole) {
         if (bindingResult.hasErrors()) {
@@ -54,17 +50,16 @@ public class AdminController {
             user.setRoles(roleService.findAll());
         }
         userService.createUser(user);
-        return "redirect:/admin";
+        return "redirect:/admins";
     }
 
-    @GetMapping("/update")
+    @GetMapping("/update/{id}")
     public String updateForm(Model model,
                              @RequestParam("id") Long id) {
         model.addAttribute(userService.readUserById(id));
         return "update";
     }
-
-    @PostMapping("/updateauser")
+    @PostMapping("/update/{id}")
     public String update(@ModelAttribute("user") @Valid User user,
                          BindingResult bindingResult,
                          @RequestParam("role") String selectedRole,
@@ -78,20 +73,18 @@ public class AdminController {
             user.setRoles(roleService.findAll());
         }
         userService.updateUser(id, user);
-        return "redirect:/admin";
+        return "redirect:/admins";
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/delete/{id}")
     public String deleteForm(Model model,
                              @RequestParam("id") Long id) {
         model.addAttribute(userService.readUserById(id));
         return "delete";
     }
-
-    @PostMapping("/deleteauser")
+    @DeleteMapping("/delete/{id}")
     public String delete(@RequestParam("id") Long id) {
         userService.deleteUser(id);
-        return "redirect:/admin";
+        return "redirect:/admins";
     }
-
 }

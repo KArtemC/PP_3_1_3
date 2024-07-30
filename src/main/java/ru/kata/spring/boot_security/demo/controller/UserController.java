@@ -25,10 +25,10 @@ public class UserController {
         return "index";
     }
 
-    @GetMapping("/user")
+    @GetMapping("/users/{id}")
     public String readUser(Principal principal, Model model) {
-        model.addAttribute("user", userService.findByUsername(principal.getName()));
-        return "user";
+        model.addAttribute("users", userService.findByUsername(principal.getName()));
+        return "users";
     }
 
 }
